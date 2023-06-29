@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Farhang-e-Syeda</title>
+  <style>
+    body {
+      background-color: #FFF5EE; /* body color */
+      margin: 0;
+      padding: 0;
+      font-family: monospace
+    }
+    
+    .banner {
+      background-color: #006400; /* banner color */
+      height: 100px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .banner img {
+      max-height: 80px;
+      max-width: 200px;
+    }
+
+    h1, p {
+      font-family: monospace;
+      text-align: center;
+    }
+
+    .toolbar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .toolbar a {
+      margin-left: 10px;
+      text-decoration: none;
+    }
+
+    .search-bar {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .search-bar input[type="text"] {
+      width: 300px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 20px;
+      border: 1px solid black; /* Add a black border */
+    }
+
+    /* Media Queries for Mobile Devices */
+    @media screen and (max-width: 768px) {
+      .search-bar input[type="text"] {
+        width: 80%; /* Adjust width for mobile devices */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <img src="Nastaliq_farhangesyeda.JPG" alt="Header Image">
+  </div>
+  
+  <h1 style="text-align: center;">The most comprehensive online Urdu dictionary</h1>
+
+  <div class="toolbar">
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="news.html">News</a>
+  </div>
+
+   <div class="search-bar">
+    <input type="text" placeholder="Search">
+  </div>
+</body>
+</html>
+
