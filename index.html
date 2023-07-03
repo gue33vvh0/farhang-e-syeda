@@ -98,14 +98,84 @@
   </div>
 
    <div class="search-bar">
-    <input type="text" placeholder="Search">
+    <input id="searchInput" type="text" placeholder="Search">
+    <button id="searchButton" type="button">Search</button>
   </div>
 
    <div class="usage">
     <h2>How to use this website:</h2>
     <p>Farhang-e-Syeda is the most complete and comprehensive Urdu dictionary on the internet. It provides definitions to every Urdu word spoken in the Pakistani vernacular, with in-text citations of word origin and etymology. The prerequisite for using the search feature above is knowing how to write in Urdu. This website does not currently provide translations from Urdu words to English or vice versa, nor does it currently support transliterations. Click about (at the bottom of the page) to learn more.</p>
+   </div>
+
+    <script>
+    // JSON data representing the dictionary entries
+    // var dictionaryData = [
+    //  {
+    //    "word": "دُرُسْت",
+    //    "meaning": "جس میں کوئی خامی یا غلطی نہ ہو ، ٹھیک ، صحیح ، بے خطا (خواب یا غلط کے مقابل) ."
+    //  },
+    //  {
+    //    "word": "دِل ہاتھ سے جاتا رَہْنا",
+    //    "meaning": "عاشق ہونا ؛ بے اختیار ہونا"
+    // },
+    //  {
+    //    "word": "خوش دِماغ",
+    //    "meaning": "لطیف مزاج والا"
+    //  }
+    //  // Add more entries as needed
+    //];
+
+    // Function to handle the search button click event
+    function handleSearch() {
+      var searchInput = document.getElementById("searchInput").value.trim();
+
+      // Search for the term in the dictionary data
+      fetch("dictionary.json")
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(dictionaryData) {
+          // Search for the term in the dictionary data
+          var matchingEntries = dictionaryData.filter(function(entry) {
+            return entry.word === searchInput;
+          });
 
 
+      // Display the matching entries or an appropriate message
+      var usageSection = document.querySelector(".usage");
+      usageSection.innerHTML = ""; // Clear previous results
+
+      if (matchingEntries.length > 0) {
+        matchingEntries.forEach(function(entry) {
+          var wordElement = document.createElement("h3");
+          wordElement.textContent = entry.word;
+          wordElement.style.fontSize = "48px";
+          wordElement.style.fontFamily = "Nastaliq, Arial, sans-serif";
+
+          var meaningElement = document.createElement("p");
+          meaningElement.textContent = entry.meaning;
+	  wordElement.style.fontSize = "36px";
+	  wordElement.style.fontFamily = "Nastaliq, Arial, sans-serif";
+
+          usageSection.appendChild(wordElement);
+          usageSection.appendChild(meaningElement);
+        });
+      } else {
+        var noResultsMessage = document.createElement("p");
+        noResultsMessage.textContent = "No results found.";
+
+        usageSection.appendChild(noResultsMessage);
+      }
+    }) 
+    .catch(function(error) {
+      console.log("Error fetching dictionary data:", error);
+    });
+  }
+
+    // Attach the search button click event handler
+    var searchButton = document.getElementById("searchButton");
+    searchButton.addEventListener("click", handleSearch);
+  </script>
 </body>
 </html>
 	
