@@ -108,26 +108,22 @@
    </div>
 
     <script>
-    // JSON data representing the dictionary entries
-    // var dictionaryData = [
-    //  {
-    //    "word": "دُرُسْت",
-    //    "meaning": "جس میں کوئی خامی یا غلطی نہ ہو ، ٹھیک ، صحیح ، بے خطا (خواب یا غلط کے مقابل) ."
-    //  },
-    //  {
-    //    "word": "دِل ہاتھ سے جاتا رَہْنا",
-    //    "meaning": "عاشق ہونا ؛ بے اختیار ہونا"
-    // },
-    //  {
-    //    "word": "خوش دِماغ",
-    //    "meaning": "لطیف مزاج والا"
-    //  }
-    //  // Add more entries as needed
-    //];
+
+    // Helper function to decode Unicode escape sequences
+    function decodeUnicode(input) {
+      return input.replace(/\\u([\dA-F]{4})/gi, function(match, p1) {
+        return String.fromCharCode(parseInt(p1, 16));
+      });
+    }
 
     // Function to handle the search button click event
     function handleSearch() {
       var searchInput = document.getElementById("searchInput").value.trim();
+      
+      // Convert the search input to Unicode escape sequence format
+      searchInput = searchInput.replace(/[\u007F-\uFFFF]/g, function(char) {
+        return "\\u" + ("0000" + char.charCodeAt(0).toString(16)).slice(-4);
+      });
 
       // Search for the term in the dictionary data
       fetch("dictionary.json")
@@ -148,13 +144,13 @@
       if (matchingEntries.length > 0) {
         matchingEntries.forEach(function(entry) {
           var wordElement = document.createElement("h3");
-          wordElement.textContent = entry.word;
+          wordElement.textContent = decodeUnicode(entry.word);
           wordElement.style.fontSize = "48px";
           wordElement.style.fontFamily = "Nastaliq, Arial, sans-serif";
 
           var meaningElement = document.createElement("p");
-          meaningElement.textContent = entry.meaning;
-	  wordElement.style.fontSize = "36px";
+          meaningElement.textContent = decodeUnicode(entry.meaning);
+	  wordElement.style.fontSize = "48px";
 	  wordElement.style.fontFamily = "Nastaliq, Arial, sans-serif";
 
           usageSection.appendChild(wordElement);
