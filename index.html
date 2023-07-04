@@ -147,14 +147,23 @@
           wordElement.textContent = decodeUnicode(entry.word);
           wordElement.style.fontSize = "36px";
           wordElement.style.fontFamily = "Nastaliq, Arial, sans-serif";
+	  wordElement.style.marginLeft = "550px";
 
           var meaningElement = document.createElement("p");
-          meaningElement.textContent = decodeUnicode(entry.meaning);
+          meaningElement.textContent = decodeUnicode(entry.meaning.replace(/\./g, ""));
 	  meaningElement.style.fontSize = "48px";
 	  meaningElement.style.fontFamily = "Nastaliq, Arial, sans-serif";
 
+	  var sourceElement = document.createElement("p");
+          sourceElement.textContent = "Source: " + entry.source;
+          sourceElement.style.fontSize = "16px";
+          sourceElement.style.fontFamily = "monospace";
+          sourceElement.style.textAlign = "right";
+
           usageSection.appendChild(wordElement);
           usageSection.appendChild(meaningElement);
+	  usageSection.appendChild(sourceElement);
+
         });
       } else {
         var noResultsMessage = document.createElement("p");
