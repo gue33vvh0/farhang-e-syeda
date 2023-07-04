@@ -12,14 +12,13 @@ source = input("Enter the source: ")
 # Convert the word and meaning to Unicode
 unicode_word = convert_to_unicode(word)
 unicode_meaning = convert_to_unicode(meaning)
-source = input("Enter the source: ")
 
 # Load existing entries from the JSON file
 with open("dictionary.json", "r", encoding="utf-8") as file:
     entries = json.load(file)
 
 # Create a new entry object
-entry = {"word": unicode_word, "meaning": unicode_meaning, "source": unicode_source}
+entry = {"word": unicode_word, "meaning": unicode_meaning, "source": source}
 
 # Append the new entry to the existing entries
 entries.append(entry)
