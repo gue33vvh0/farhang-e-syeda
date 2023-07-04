@@ -145,13 +145,13 @@
         matchingEntries.forEach(function(entry) {
           var wordElement = document.createElement("h3");
           wordElement.textContent = decodeUnicode(entry.word);
-          wordElement.style.fontSize = "48px";
+          wordElement.style.fontSize = "36px";
           wordElement.style.fontFamily = "Nastaliq, Arial, sans-serif";
 
           var meaningElement = document.createElement("p");
           meaningElement.textContent = decodeUnicode(entry.meaning);
-	  wordElement.style.fontSize = "48px";
-	  wordElement.style.fontFamily = "Nastaliq, Arial, sans-serif";
+	  meaningElement.style.fontSize = "48px";
+	  meaningElement.style.fontFamily = "Nastaliq, Arial, sans-serif";
 
           usageSection.appendChild(wordElement);
           usageSection.appendChild(meaningElement);
