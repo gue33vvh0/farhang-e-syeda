@@ -8,7 +8,7 @@ import json
 session_cookie = "dpui00sdvfusf3ieutm66judq0"
 
 # Start and end words for the loop
-start_word = 32
+start_word = 3320
 end_word = 263454
 
 # Random jitter duration range in seconds
