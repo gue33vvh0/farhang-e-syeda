@@ -47,13 +47,19 @@ try:
             apology_element = soup.find('h1', string='很抱歉')
             if apology_element:
                 print("Captcha is likely required. Please update the 'session_cookie' variable with a valid session cookie.")
-                session_cookie = input("Enter the updated 'session_cookie' value: ")
-                driver.quit()
-                # Initialize the Chrome browser with the updated session_cookie
-                driver = webdriver.Chrome()
-                driver.get("http://udb.gov.pk/result_details.php?word={}".format(last_word))
-                driver.add_cookie({"name": "PHPSESSID", "value": session_cookie})
-                continue
+                session_cookie = "/mnt/raid1/sata_one/make_website/farhang-e-syeda-bot/farhang_e_syeda_bot/php_session_id.txt"
+                if os.path.exists(session_cookie_path):
+                    with open(session_cookie_path, "r") as session_file:
+                        session_cookie = session_file.read().strip()
+                        print("Updated session_cookie:", session_cookie)
+                        driver.quit()
+                        # Initialize the Chrome browser with the updated session_cookie
+                        driver = webdriver.Chrome()
+                        driver.get("http://udb.gov.pk/result_details.php?word={}".format(last_word))
+                        driver.add_cookie({"name": "PHPSESSID", "value": session_cookie})
+                        continue
+               else:
+                   print("php_session_id.txt file not found.")
 
 
             # find the word
