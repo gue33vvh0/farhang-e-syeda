@@ -71,8 +71,8 @@ try:
                         driver.get("http://udb.gov.pk/result_details.php?word={}".format(last_word))
                         driver.add_cookie({"name": "PHPSESSID", "value": session_cookie})
                         continue
-               else:
-                   print("php_session_id.txt file not found.")
+            else:
+                print("php_session_id.txt file not found.")
 
 
             # find the word
