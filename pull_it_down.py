@@ -3,6 +3,7 @@ import time
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import json
+import os
 
 # Session cookie value
 session_cookie = "dpui00sdvfusf3ieutm66judq0"
@@ -25,6 +26,9 @@ driver.add_cookie({"name": "PHPSESSID", "value": session_cookie})
 # Initialize the last_word variable to start_word
 last_word = start_word
 
+# Initialize last execution timestamp for the apology_element block
+last_execution_timestamp = None
+
 try:
     # Loop from start_word to end_word
     for word in range(start_word, end_word + 1):
@@ -46,12 +50,21 @@ try:
 
             apology_element = soup.find('h1', string='很抱歉')
             if apology_element:
-                print("Captcha is likely required. Please update the 'session_cookie' variable with a valid session cookie.")
-                session_cookie = "/mnt/raid1/sata_one/make_website/farhang-e-syeda-bot/farhang_e_syeda_bot/php_session_id.txt"
+                print("Captcha is required. Updating the 'session_cookie' variable.")
+                session_cookie = "/home/ak92/Desktop/temp_lughat_project/farhang-e-syeda-bot/farhang_e_syeda_bot/php_session_id.txt"
                 if os.path.exists(session_cookie_path):
+                    file_timestamp = os.path.getmtime(session_cookie)
+                    if last_execution_timestamp is not None and last_execution_timestamp == file_timestamp:
+                        wait_time = 10800
+                        print(f"Waiting for {wait_time/60:.2f} minutes before proceeding...")
+                        time.sleep(wait_time)
+
+                    # Update the last execution timestamp
+                    last_execution_timestamp = file_timestamp
+
                     with open(session_cookie_path, "r") as session_file:
                         session_cookie = session_file.read().strip()
-                        print("Updated session_cookie:", session_cookie)
+                        print("Updated, new session cookie is:", session_cookie)
                         driver.quit()
                         # Initialize the Chrome browser with the updated session_cookie
                         driver = webdriver.Chrome()
