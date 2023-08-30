@@ -9,7 +9,7 @@ import os
 session_cookie = "dpui00sdvfusf3ieutm66judq0"
 
 # Start and end words for the loop
-start_word = 3320
+start_word = 1767
 end_word = 263454
 
 # Random jitter duration range in seconds
@@ -27,7 +27,7 @@ driver.add_cookie({"name": "PHPSESSID", "value": session_cookie})
 last_word = start_word
 
 # Initialize last execution timestamp for the apology_element block
-last_execution_timestamp = None
+last_execution_timestamp = 1693144777.8785644
 
 try:
     # Loop from start_word to end_word
@@ -51,9 +51,9 @@ try:
             apology_element = soup.find('h1', string='很抱歉')
             if apology_element:
                 print("Captcha is required. Updating the 'session_cookie' variable.")
-                session_cookie = "/home/ak92/Desktop/temp_lughat_project/farhang-e-syeda-bot/farhang_e_syeda_bot/php_session_id.txt"
+                session_cookie_path = "/home/ak92/Desktop/temp_lughat_project/farhang-e-syeda-bot/farhang_e_syeda_bot/php_session_id.txt"
                 if os.path.exists(session_cookie_path):
-                    file_timestamp = os.path.getmtime(session_cookie)
+                    file_timestamp = os.path.getmtime(session_cookie_path)
                     if last_execution_timestamp is not None and last_execution_timestamp == file_timestamp:
                         wait_time = 10800
                         print(f"Waiting for {wait_time/60:.2f} minutes before proceeding...")
@@ -71,8 +71,8 @@ try:
                         driver.get("http://udb.gov.pk/result_details.php?word={}".format(last_word))
                         driver.add_cookie({"name": "PHPSESSID", "value": session_cookie})
                         continue
-            else:
-                print("php_session_id.txt file not found.")
+                else:
+                    print("php_session_id.txt file not found.")
 
 
             # find the word
@@ -133,8 +133,8 @@ try:
 
         except Exception as e:
             print(f"Error occurred for word {word}: {e}")
-            print("Pausing for 5 seconds and continuing...")
-            time.sleep(5)
+            print("Pausing for 3 hours and continuing...")
+            time.sleep(10800)
 
 except KeyboardInterrupt:
     print("Keyboard interrupt received. Saving fetched data to words_data.json...")
