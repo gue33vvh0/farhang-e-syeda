@@ -1,20 +1,21 @@
 import random
 import time
+import datetime
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import json
 import os
 
 # Session cookie value
-session_cookie = "dpui00sdvfusf3ieutm66judq0"
+session_cookie = "s8h4k1hb6rij2l9rgn6cui21j6"
 
 # Start and end words for the loop
-start_word = 1767
+start_word = 37645
 end_word = 263454
 
 # Random jitter duration range in seconds
-jitter_min = 60  # 1 minutes
-jitter_max = 180  # 3 minutes
+jitter_min = 3  # 3 seconds
+jitter_max = 15  # 15 seconds
 
 # Initialize the Chrome browser
 driver = webdriver.Chrome()
@@ -42,6 +43,10 @@ try:
             # Switch to the new tab
             driver.switch_to.window(driver.window_handles[-1])
 
+            # Update timestamp within try loop, within for loop, within try loop - lol
+            current_datetime = datetime.datetime.now()
+            timestamp = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+
             # Get the page source
             page_source = driver.page_source
 
@@ -50,13 +55,13 @@ try:
 
             apology_element = soup.find('h1', string='很抱歉')
             if apology_element:
-                print("Captcha is required. Updating the 'session_cookie' variable.")
+                print("Captcha is required. Updating the 'session_cookie' variable.", timestamp)
                 session_cookie_path = "/home/ak92/Desktop/temp_lughat_project/farhang-e-syeda-bot/farhang_e_syeda_bot/php_session_id.txt"
                 if os.path.exists(session_cookie_path):
                     file_timestamp = os.path.getmtime(session_cookie_path)
                     if last_execution_timestamp is not None and last_execution_timestamp == file_timestamp:
                         wait_time = 10800
-                        print(f"Waiting for {wait_time/60:.2f} minutes before proceeding...")
+                        print(f"Waiting for {wait_time/60:.2f} minutes before proceeding...", timestamp)
                         time.sleep(wait_time)
 
                     # Update the last execution timestamp
@@ -72,7 +77,7 @@ try:
                         driver.add_cookie({"name": "PHPSESSID", "value": session_cookie})
                         continue
                 else:
-                    print("php_session_id.txt file not found.")
+                    print("php_session_id.txt file not found.", timestamp)
 
 
             # find the word
@@ -114,7 +119,7 @@ try:
                 json.dump(word_data, json_file, ensure_ascii=False, indent=4)
 
 
-            print(f"Word {word} data saved.")
+            print(f"Word {word} data saved.", timestamp)
 
             # Close the previous word's tab
             if word != start_word:
@@ -132,12 +137,12 @@ try:
             last_word = word
 
         except Exception as e:
-            print(f"Error occurred for word {word}: {e}")
-            print("Pausing for 3 hours and continuing...")
+            print(f"Error occurred for word {word}: {e}", timestamp)
+            print("Pausing for 3 hours and continuing...", timestamp)
             time.sleep(10800)
 
 except KeyboardInterrupt:
-    print("Keyboard interrupt received. Saving fetched data to words_data.json...")
+    print("Keyboard interrupt received. Saving fetched data to words_data.json...", timestamp)
 
 finally:
     # Close all tabs and the browser
@@ -147,4 +152,4 @@ finally:
 
     driver.quit()
 
-    print("All words' data fetched and saved to their respective json files.")
+    print("All words' data fetched and saved to their respective json files.", timestamp)
