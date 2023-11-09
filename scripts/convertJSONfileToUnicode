@@ -1,0 +1,21 @@
+import json
+
+def convert_to_unicode(text):
+    unicode_text = text.encode('unicode-escape').decode()
+    return unicode_text
+
+# Load the existing JSON file
+with open("final_output.json", "r", encoding="utf-8") as file:
+    data = json.load(file)
+
+# Convert each word and meaning to Unicode
+for entry in data:
+    entry["word"] = convert_to_unicode(entry["word"])
+    entry["meaning"] = convert_to_unicode(entry["meaning"])
+
+# Write the updated data back to the JSON file
+with open("output_unicode.json", "w", encoding="utf-8") as file:
+    json.dump(data, file, ensure_ascii=False, indent=4)
+
+print("Conversion to Unicode completed successfully!")
+
