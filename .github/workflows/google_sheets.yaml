@@ -11,7 +11,7 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - id: googlesheet_actions
-          uses: rjoydip/googlesheet-actions@0.1.1
+          uses: rjoydip-zz/googlesheet-actions@0.1.1
           with:
             sheet-id: ${{ secrets.SHEET_ID }}
         - id: echo
