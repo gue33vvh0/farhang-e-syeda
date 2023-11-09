@@ -43,67 +43,6 @@
       font-size: 16px;
       font-weight: bold;
     }
-
-    .form-container {
-      max-width: 800px;
-      margin: auto;
-    }
-
-    .form-section {
-      margin-top: 20px;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-      margin-bottom: 20px;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding:20px;
-    }
-
-    textarea {
-      width: 100%;
-    }
-
-    input {
-      width: 100%;
-    }
-
-    label {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-     input {
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      width: 300px;
-    }
-
-     button {
-      background-color: #006400;
-      color: #FFF;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
-      margin-top: 10px;
-      width: 100%;
-    }
-
-    .error-message {
-      color: red;
-      margin-top: 10px;
-      text-align: center;
-    }
-
   </style>
 </head>
 <body>
@@ -113,43 +52,11 @@
 
   <h1>Submit a word</h1>
   <p style="text-align:left;"> This form allows you to submit a new word to the dictionary. You must specify a source for your word (i.e. a dictionary reference). If the word is from spoken vernacular, just type "community" in the source field.</p>
+
+  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeP8AKhcdV8EFN0kfCw-nAgk1p4bbkFZrHmuTw57NKGdHkE_w/viewform?embedded=true" width="640" height="645" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+
   <div class="toolbar">
     <a href="index.html">Back</a>
-  </div>
-
-
-  <div class="form-container">
-  <div class="form-section">
-    <form id="wordForm">
-      <label for="word">Word:</label>
-      <input type="text" id="word" name="word" required>
-
-      
-      <label for="meaning" style="font-size: 18px; font-weight: bold; margin-bottom: 20px;">Meaning:</label>
-      <textarea id="meaning" name="meaning" rows="4" cols="50" required style="border-radius: 10px;"></textarea>
-
-      <label for="source" style="font-size: 18px; font-weight: bold; margin-bottom: 20px;">Source:</label>
-      <input type="text" id="source" name="source" required>
-
-      <p class="error-message" id="errorMessage"></p>
-
-      <button type="button" onclick="submitForm()">Submit</button>
-    </form>
-  </div>
-
-  <script>
-    function submitForm() {
-      var sourceValue = document.getElementById("source").value.trim();
-      var errorMessageElement = document.getElementById("errorMessage");
-
-      if (sourceValue === "") {
-        errorMessageElement.textContent = "You must specify a source for a valid submission.";
-      } else {
-        errorMessageElement.textContent = ""; // Clear any previous error message
-        // Additional logic to handle form submission goes here
-      }
-    }
-  </script>
 
 </body>
 </html>
