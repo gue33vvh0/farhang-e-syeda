@@ -1,11 +1,8 @@
 name: Update Dictionary
 
 on:
-  push:
-    branches:
-      - word_submission
-   # schedule:
-   #  - cron: "0 0 * * 0" #Run at midnight every Sunday
+  schedule:
+    - cron: "0 0 * * 0" #Run at midnight every Sunday
 
 jobs:
   update_dictionary:
@@ -20,7 +17,7 @@ jobs:
 
       - name: Fetch data from Google Sheets
         run: |
-          curl -o sheet.csv -L "https://docs.google.com/spreadsheets/d/e/2PACX-1vT80LeNEFeK41L8MNBmB3sLGHFCzohChfQKE0OhgIM8MDsHcKs6kv5-Z8_aBK46_VQ1gvU0cueDbc_r/pub?gid=1805796954&single=true&output=csv"
+          curl -o sheet.csv -L ${{ secrets.GOOGLE_SHEETS_URL }}
 
       - name: Run Python script to append to dictionary
         run: python scripts/append_to_dictionary_automated.py
