@@ -1,25 +1,43 @@
-# bare minimal
-name: googlesheet
+name: Update Dictionary
 
 on:
-    push:
-      branches:
-        - word_submission
+  push:
+    branches:
+      - word_submission
+   # schedule:
+   #  - cron: "0 0 * * 0" #Run at midnight every Sunday
 
 jobs:
-    fetch:
-      runs-on: ubuntu-latest
-      steps:
-        - id: googlesheet_actions
-          uses: rjoydip-zz/googlesheet-actions@0.1.1
-          with:
-            sheet-id: ${{ secrets.SHEET_ID }}
-        - id: echo
-          uses: actions/github-script@v2
-          with:
-            github-token: ${{secrets.GITHUB_TOKEN}}
-            script: |
-                console.log(${{steps.googlesheet_actions.outputs.result}})
-        - name: test
-          run: |
-            cat $HOME/data.json
+  update_dictionary:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install axios
+
+      - name: Fetch data from Google Sheets
+        run: |
+          curl -o sheet.csv -L "https://docs.google.com/spreadsheets/d/e/2PACX-1vT80LeNEFeK41L8MNBmB3sLGHFCzohChfQKE0OhgIM8MDsHcKs6kv5-Z8_aBK46_VQ1gvU0cueDbc_r/pub?gid=1805796954&single=true&output=csv"
+
+      - name: Run Python script to append to dictionary
+        run: python scripts/append_to_dictionary_automated.py
+
+      - name: Run Python script to remove duplicates
+        run: |
+          python scripts/remove_dupes.py
+
+      - name: Commit changes
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          # Check if there are changes to be committed
+          if git diff --quiet --exit-code -- dictionary.json; then
+             echo "No changes to commit."
+          else
+             git add dictionary.json
+             git commit -m "Update dictionary.json with latest community submitted words"
+             git push
+          fi
