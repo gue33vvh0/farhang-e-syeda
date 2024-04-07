@@ -1,11 +1,8 @@
 name: Update Dictionary
 
 on:
-  push:
-    branches:
-      - word_submission
-   # schedule:
-   #  - cron: "0 0 * * 0" #Run at midnight every Sunday
+  schedule:
+    - cron: "0 0 * * 0" #Run at midnight every Sunday
 
 jobs:
   update_dictionary:
