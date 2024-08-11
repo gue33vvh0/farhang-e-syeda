@@ -8,7 +8,7 @@
       background-color: #FFF5EE; /* body color */
       margin: 0;
       padding: 0;
-      font-family: monospace
+      font-family: monospace;
     }
     
     .banner {
@@ -57,7 +57,7 @@
       border: 1px solid black; /* Add a black border */
     }
 
-    .search-bar input[type="search"] {
+    .search-bar button {
       background-color: #006400;
       color: #FFF;
       border: none;
@@ -81,15 +81,17 @@
       border: 1px solid black;
       padding: 10px;
     }
-
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
 </head>
 <body>
   <div class="banner">
+  <a href="https://farhangesyeda.org/" target="_blank">
     <img src="Nastaliq_farhangesyeda.JPG" alt="Header Image">
-  </div>
-  
-  <h1 style="text-align: center;">The most comprehensive online Urdu dictionary</h1>
+  </a>
+</div>
+ 
+  <h1>The most comprehensive online Urdu dictionary</h1>
 
   <div class="toolbar">
     <a href="pages/about.html">About</a>
@@ -98,18 +100,17 @@
     <a href="pages/submit_words.html">Submit</a>
   </div>
 
-   <div class="search-bar">
+  <div class="search-bar">
     <input id="searchInput" type="text" placeholder="Search">
     <button id="searchButton" type="button">Search</button>
   </div>
 
-   <div class="usage">
+  <div class="usage">
     <h2>How to use this website:</h2>
     <p>Farhang-e-Syeda is the most complete and comprehensive Urdu dictionary on the internet. It provides definitions to every Urdu word spoken in the Pakistani vernacular, with in-text citations of word origin and etymology. The prerequisite for using the search feature above is knowing how to write in Urdu. This website does not currently provide translations from Urdu words to English or vice versa, nor does it currently support transliterations. Click about (at the bottom of the page) to learn more.</p>
-   </div>
+  </div>
 
-    <script>
-
+  <script>
     // Helper function to decode Unicode escape sequences
     function decodeUnicode(input) {
       return input.replace(/\\u([\dA-F]{4})/gi, function(match, p1) {
@@ -119,69 +120,68 @@
 
     // Function to handle the search button click event
     function handleSearch() {
-      var searchInput = document.getElementById("searchInput").value.trim();
-      
-      // Convert the search input to Unicode escape sequence format
-      searchInput = searchInput.replace(/[\u007F-\uFFFF]/g, function(char) {
-        return "\\u" + ("0000" + char.charCodeAt(0).toString(16)).slice(-4);
-      });
+      const searchInput = document.getElementById('searchInput').value.trim();
+      const usageSection = document.querySelector('.usage');
 
-      // Search for the term in the dictionary data
-      fetch("dictionary.json")
-        .then(function(response) {
-          return response.json();
-        })
-        .then(function(dictionaryData) {
-          // Search for the term in the dictionary data
-          var matchingEntries = dictionaryData.filter(function(entry) {
-            return entry.word === searchInput;
+      fetch('dictionary.json')
+        .then(response => response.json())
+        .then(dictionaryData => {
+          // Decode dictionary words and meanings
+          dictionaryData.forEach(entry => {
+            entry.word = decodeUnicode(entry.word);
+            entry.meaning = decodeUnicode(entry.meaning);
           });
 
+          // Create a Fuse instance with refined options
+          const fuse = new Fuse(dictionaryData, {
+            keys: ['word'],
+            threshold: 0.2, // Adjust this value for stricter results
+            includeScore: true // Include scores to see how well each result matches
+          });
 
-      // Display the matching entries or an appropriate message
-      var usageSection = document.querySelector(".usage");
-      usageSection.innerHTML = ""; // Clear previous results
+          // Perform fuzzy matching
+          const results = fuse.search(searchInput).slice(0, 5); // Limit to top 5 results
 
-      if (matchingEntries.length > 0) {
-        matchingEntries.forEach(function(entry) {
-          var wordElement = document.createElement("h3");
-          wordElement.textContent = decodeUnicode(entry.word);
-          wordElement.style.fontSize = "36px";
-          wordElement.style.fontFamily = "Nastaliq, Arial, sans-serif";
-	  wordElement.style.marginLeft = "550px";
+          usageSection.innerHTML = ''; // Clear previous results
 
-          var meaningElement = document.createElement("p");
-          meaningElement.textContent = decodeUnicode(entry.meaning.replace(/\./g, ""));
-	  meaningElement.style.fontSize = "48px";
-	  meaningElement.style.fontFamily = "Nastaliq, Arial, sans-serif";
+          if (results.length > 0) {
+            results.forEach(result => {
+              const entry = result.item;
+              const score = result.score; // Get the score
 
-	  var sourceElement = document.createElement("p");
-          sourceElement.textContent = "Source: " + entry.source;
-          sourceElement.style.fontSize = "16px";
-          sourceElement.style.fontFamily = "monospace";
-          sourceElement.style.textAlign = "right";
+              const wordElement = document.createElement('h3');
+              wordElement.textContent = entry.word;
+              wordElement.style.fontSize = '36px';
+              wordElement.style.fontFamily = 'Nastaliq, Arial, sans-serif';
 
-          usageSection.appendChild(wordElement);
-          usageSection.appendChild(meaningElement);
-	  usageSection.appendChild(sourceElement);
+              const meaningElement = document.createElement('p');
+              meaningElement.textContent = entry.meaning.replace(/\./g, '');
+              meaningElement.style.fontSize = '48px';
+              meaningElement.style.fontFamily = 'Nastaliq, Arial, sans-serif';
 
+              const sourceElement = document.createElement('p');
+              sourceElement.textContent = 'Source: ' + entry.source;
+              sourceElement.style.fontSize = '16px';
+              sourceElement.style.fontFamily = 'monospace';
+              sourceElement.style.textAlign = 'right';
+
+              usageSection.appendChild(wordElement);
+              usageSection.appendChild(meaningElement);
+              usageSection.appendChild(sourceElement);
+            });
+          } else {
+            const noResultsMessage = document.createElement('p');
+            noResultsMessage.textContent = 'No results found.';
+            usageSection.appendChild(noResultsMessage);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching dictionary data:', error);
         });
-      } else {
-        var noResultsMessage = document.createElement("p");
-        noResultsMessage.textContent = "No results found.";
+    }
 
-        usageSection.appendChild(noResultsMessage);
-      }
-    }) 
-    .catch(function(error) {
-      console.log("Error fetching dictionary data:", error);
-    });
-  }
-
-    // Attach the search button click event handler
-    var searchButton = document.getElementById("searchButton");
-    searchButton.addEventListener("click", handleSearch);
+    document.getElementById('searchButton').addEventListener('click', handleSearch);
   </script>
 </body>
 </html>
-	
+
