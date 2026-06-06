@@ -69,6 +69,18 @@
       margin-left: 10px;
     }
 
+    .search-bar button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .search-status {
+      min-height: 20px;
+      margin: 10px 0 0;
+      font-size: 14px;
+      text-align: center;
+    }
+
     .usage {
       margin-top: 20px;
       margin-left: auto;
@@ -100,7 +112,8 @@
 
   <div class="search-bar">
     <input id="searchInput" type="text" placeholder="Search">
-    <button id="searchButton" type="button">Search</button>
+    <button id="searchButton" type="button" disabled>Search</button>
+    <p id="searchStatus" class="search-status" role="status">Loading dictionary...</p>
   </div>
 
   <div class="usage">
@@ -116,70 +129,113 @@
       });
     }
 
-    // Function to handle the search button click event
-    function handleSearch() {
-      const searchInput = document.getElementById('searchInput').value.trim();
-      const usageSection = document.querySelector('.usage');
+    let fuse = null;
 
+    const searchInputElement = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const searchStatus = document.getElementById('searchStatus');
+    const usageSection = document.querySelector('.usage');
+
+    function setSearchStatus(message) {
+      searchStatus.textContent = message;
+    }
+
+    function renderResults(results) {
+      usageSection.innerHTML = ''; // Clear previous results
+
+      if (results.length > 0) {
+        results.forEach(result => {
+          const entry = result.item;
+
+          const wordElement = document.createElement('h3');
+          wordElement.textContent = entry.word;
+          wordElement.style.fontSize = '36px';
+          wordElement.style.fontFamily = 'Nastaliq, Arial, sans-serif';
+
+          const meaningElement = document.createElement('p');
+          meaningElement.textContent = entry.meaning.replace(/\./g, '');
+          meaningElement.style.fontSize = '48px';
+          meaningElement.style.fontFamily = 'Nastaliq, Arial, sans-serif';
+
+          const sourceElement = document.createElement('p');
+          sourceElement.textContent = 'Source: ' + entry.source;
+          sourceElement.style.fontSize = '16px';
+          sourceElement.style.fontFamily = 'monospace';
+          sourceElement.style.textAlign = 'right';
+
+          usageSection.appendChild(wordElement);
+          usageSection.appendChild(meaningElement);
+          usageSection.appendChild(sourceElement);
+        });
+      } else {
+        const noResultsMessage = document.createElement('p');
+        noResultsMessage.textContent = 'No results found.';
+        usageSection.appendChild(noResultsMessage);
+      }
+    }
+
+    function loadDictionary() {
       fetch('dictionary.json')
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Dictionary request failed with status ' + response.status);
+          }
+
+          return response.json();
+        })
         .then(dictionaryData => {
-          // Decode dictionary words and meanings
+          // Decode dictionary words and meanings once, before any searches run.
           dictionaryData.forEach(entry => {
             entry.word = decodeUnicode(entry.word);
             entry.meaning = decodeUnicode(entry.meaning);
           });
 
-          // Create a Fuse instance with refined options
-          const fuse = new Fuse(dictionaryData, {
+          fuse = new Fuse(dictionaryData, {
             keys: ['word'],
             threshold: 0.2, // Adjust this value for stricter results
             includeScore: true // Include scores to see how well each result matches
           });
 
-          // Perform fuzzy matching
-          const results = fuse.search(searchInput).slice(0, 5); // Limit to top 5 results
-
-          usageSection.innerHTML = ''; // Clear previous results
-
-          if (results.length > 0) {
-            results.forEach(result => {
-              const entry = result.item;
-              const score = result.score; // Get the score
-
-              const wordElement = document.createElement('h3');
-              wordElement.textContent = entry.word;
-              wordElement.style.fontSize = '36px';
-              wordElement.style.fontFamily = 'Nastaliq, Arial, sans-serif';
-
-              const meaningElement = document.createElement('p');
-              meaningElement.textContent = entry.meaning.replace(/\./g, '');
-              meaningElement.style.fontSize = '48px';
-              meaningElement.style.fontFamily = 'Nastaliq, Arial, sans-serif';
-
-              const sourceElement = document.createElement('p');
-              sourceElement.textContent = 'Source: ' + entry.source;
-              sourceElement.style.fontSize = '16px';
-              sourceElement.style.fontFamily = 'monospace';
-              sourceElement.style.textAlign = 'right';
-
-              usageSection.appendChild(wordElement);
-              usageSection.appendChild(meaningElement);
-              usageSection.appendChild(sourceElement);
-            });
-          } else {
-            const noResultsMessage = document.createElement('p');
-            noResultsMessage.textContent = 'No results found.';
-            usageSection.appendChild(noResultsMessage);
-          }
+          searchButton.disabled = false;
+          setSearchStatus('Dictionary loaded.');
         })
         .catch(error => {
           console.error('Error fetching dictionary data:', error);
+          searchButton.disabled = true;
+          setSearchStatus('Dictionary failed to load. Please refresh the page.');
         });
     }
 
-    document.getElementById('searchButton').addEventListener('click', handleSearch);
+    // Function to handle the search button click event
+    function handleSearch() {
+      if (!fuse) {
+        setSearchStatus('Dictionary is still loading...');
+        return;
+      }
+
+      const searchInput = searchInputElement.value.trim();
+
+      if (!searchInput) {
+        setSearchStatus('Enter a word to search.');
+        return;
+      }
+
+      setSearchStatus('Searching...');
+
+      // Perform fuzzy matching
+      const results = fuse.search(searchInput).slice(0, 5); // Limit to top 5 results
+      renderResults(results);
+      setSearchStatus(results.length + ' result(s) found.');
+    }
+
+    searchButton.addEventListener('click', handleSearch);
+    searchInputElement.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        handleSearch();
+      }
+    });
+
+    loadDictionary();
   </script>
 </body>
 </html>
-
